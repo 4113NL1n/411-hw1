@@ -3,7 +3,6 @@ import logging
 import os
 import sqlite3
 from typing import Any
-
 from meal_max.utils.sql_utils import get_db_connection
 from meal_max.utils.logger import configure_logger
 
@@ -25,6 +24,7 @@ class Meal:
             raise ValueError("Price must be a positive value.")
         if self.difficulty not in ['LOW', 'MED', 'HIGH']:
             raise ValueError("Difficulty must be 'LOW', 'MED', or 'HIGH'.")
+
 
 
 def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
