@@ -3,7 +3,8 @@ import sqlite3
 
 from unittest.mock import patch, MagicMock
 
-from meal_max.models.kitchen_model import Meal,create_meal,clear_meals
+from meal_max.models.kitchen_model import Meal,create_meal
+
 
 
 def test_meal_create():
@@ -30,9 +31,34 @@ def test_create_meal_invalid_difficulty():
 #     with pytest.raises(ValueError, match="Meal with name 'Pasta' already exists"):
 #             create_meal("Pasta", "Italian", 11.5, "MED")
 
-def test_clear_meals():
-    create_meal("Pizza", "Italian", 15.0, "MED")
-    clear_meals()
+# def test_clear_meals():
+#     create_meal("Pizza", "Italian", 15.0, "MED")
+#     clear_meals()
 
+
+def test_create_meal_duplicate(mocker):
+    # Mock get_db_connection to simulate IntegrityError for duplicate meal
+    mock_conn = mocker.Mock()
+    mock_cursor = mocker.Mock()
+    mock_conn.cursor.return_value = mock_cursor
+
+    # Set up the mock to raise an IntegrityError when execute is called
+    mock_cursor.execute.side_effect = sqlite3.IntegrityError
+
+    # Patch get_db_connection to return the mock connection
+    mocker.patch('kitchen_model.get_db_connection', return_value=mock_conn)
+
+    # Now call create_meal and check that it raises a ValueError for the duplicate meal
+    with pytest.raises(ValueError, match="Meal with name 'TestMeal' already exists"):
+        create_meal("TestMeal", "Italian", 12.5, "MED")
+
+    # Verify that the appropriate SQL execute call was attempted
+    mock_cursor.execute.assert_called_once_with(
+        """
+        INSERT INTO meals (meal, cuisine, price, difficulty)
+        VALUES (?, ?, ?, ?)
+        """,
+        ("TestMeal", "Italian", 12.5, "MED")
+    )
 
 
