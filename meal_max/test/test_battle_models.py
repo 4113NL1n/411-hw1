@@ -1,8 +1,26 @@
 import pytest
 import requests
-
+from contextlib import contextmanager
 from meal_max.models.battle_model import BattleModel
 from meal_max.models.kitchen_model import Meal,create_meal
+
+def normalize_whitespace(sql_query: str) -> str:
+    return re.sub(r'\s+', ' ', sql_query).strip()
+
+@pytest.fixture
+def mock_cursor(mocker):
+    mock_conn = mocker.Mock()
+    mock_cursor = mocker.Mock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = None  
+    mock_cursor.fetchall.return_value = []
+    mock_conn.commit.return_value = None
+    @contextmanager
+    def mock_get_db_connection():
+        yield mock_conn  
+    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
+    return mock_cursor 
+    
 
 @pytest.fixture
 def battle_model():
@@ -57,10 +75,16 @@ def test_clear_combatants(battle_model,sampleMeal_1,sampleMeal_3):
     assert len(battle_model.combatants) == 0
     battle_model.prep_combatant(sampleMeal_1)
     assert len(battle_model.combatants) == 1
-
-def test_battle(battle_model,sampleMeal_1,sampleMeal_3):
-    battle_model.prep_combatant(sampleMeal_1)
-    battle_model.prep_combatant(sampleMeal_3)
-    winner = battle_model.battle()
-    assert winner == battle_model.combatants[0].meal 
     
+# Only one that need mock DB
+def test_battle(mock_cursor,sampleMeal_1,sampleMeal_2,battle_model):
+    mock_cursor.execute.return_value = None
+    mock_cursor.fetchone.return_value = (0,)  
+    create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
+    create_meal(meal="Pasta", cuisine="Chinese", price=2.5, difficulty="LOW")
+    battle_model.prep_combatant(sampleMeal_1)
+    battle_model.prep_combatant(sampleMeal_2)
+    winner = battle_model.battle()
+    assert winner == battle_model.combatants[0].meal
+    assert len(battle_model.combatants) == 1
+
