@@ -3,6 +3,7 @@ import logging
 import os
 import sqlite3
 from typing import Any
+from unittest.mock import patch 
 from meal_max.utils.sql_utils import get_db_connection
 from meal_max.utils.logger import configure_logger
 

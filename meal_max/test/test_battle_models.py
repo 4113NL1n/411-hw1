@@ -1,5 +1,6 @@
 import pytest
 import requests
+import re
 from contextlib import contextmanager
 from meal_max.models.battle_model import BattleModel
 from meal_max.models.kitchen_model import Meal,create_meal
@@ -35,12 +36,17 @@ def sampleMeal_2():
 def sampleMeal_3():
     return Meal(id=2, meal="Chinese", cuisine="English", price=25, difficulty="MED")
 
-
-def test_prep_combatant_success(battle_model, sampleMeal_1, sampleMeal_2):
+# There are only six test
+def test_prep_combatant_success(battle_model, sampleMeal_1, sampleMeal_2,mock_cursor):
     battle_model.prep_combatant(sampleMeal_1)
     assert battle_model.combatants == [sampleMeal_1]
     battle_model.prep_combatant(sampleMeal_2)
-    assert battle_model.combatants == [sampleMeal_1, sampleMeal_2]    
+    assert battle_model.combatants == [sampleMeal_1, sampleMeal_2]   
+    #Not sure if needed, just in case
+    mock_cursor.execute.return_value = None
+    mock_cursor.fetchone.return_value = (0,)  
+    create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
+    create_meal(meal="Pasta", cuisine="Chinese", price=2.5, difficulty="LOW") 
 
 def test_prep_combatant_full(battle_model, sampleMeal_1, sampleMeal_2, sampleMeal_3):
     battle_model.prep_combatant(sampleMeal_1)
