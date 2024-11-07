@@ -94,3 +94,11 @@ def test_battle(mock_cursor,sampleMeal_1,sampleMeal_2,battle_model):
     assert winner == battle_model.combatants[0].meal
     assert len(battle_model.combatants) == 1
 
+def test_battle_failure(mock_cursor,sampleMeal_2,battle_model):
+    mock_cursor.execute.return_value = None
+    mock_cursor.fetchone.return_value = (0,)  
+    create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
+    battle_model.prep_combatant(sampleMeal_2)
+    with pytest.raises(ValueError, match="Two combatants must be prepped for a battle."):
+        winner = battle_model.battle()
+    

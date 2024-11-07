@@ -110,7 +110,6 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
     else:
         logger.error("Invalid sort_by parameter: %s", sort_by)
         raise ValueError("Invalid sort_by parameter: %s" % sort_by)
-
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
