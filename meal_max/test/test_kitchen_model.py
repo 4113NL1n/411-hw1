@@ -75,14 +75,14 @@ def test_clear_meals(mocker,mock_cursor):
     mock_cursor.executescript.assert_called_once()
     
     
-#     # TODO
-# def test_clear_meals_database_error(mock_cursor,mocker):
-#     # create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
-#     mock_cursor.execute.side_effect = sqlite3.Error("db err")
-#     mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_mel_table.sql'})
-#     mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
-#     with pytest.raises(sqlite3.Error, match="db err"):
-#         clear_meals()
+    # TODO
+def test_clear_meals_database_error(mock_cursor,mocker):
+    # create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
+    mock_cursor.executescript.side_effect = sqlite3.Error("db err")
+    mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_mel_table.sql'})
+    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
+    with pytest.raises(sqlite3.Error, match="db err"):
+        clear_meals()
 
 
         
