@@ -4,18 +4,10 @@ import re
 import sqlite3
 import logging
 from unittest import mock
-
-
 from contextlib import contextmanager
-
 from meal_max.models.kitchen_model import Meal,create_meal,clear_meals,delete_meal,get_leaderboard,get_meal_by_id,get_meal_by_name,update_meal_stats
-
-
 def normalize_whitespace(sql_query: str) -> str:
     return re.sub(r'\s+', ' ', sql_query).strip()
-
-
-
 @pytest.fixture
 def mock_cursor(mocker):
     mock_conn = mocker.Mock()
@@ -29,8 +21,6 @@ def mock_cursor(mocker):
         yield mock_conn  
     mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
     return mock_cursor 
-
-
 def test_create_meal(mock_cursor): 
     create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
     expected_query = normalize_whitespace(
@@ -42,19 +32,15 @@ def test_create_meal(mock_cursor):
     actual_arguments = mock_cursor.execute.call_args[0][1]
     expected_arguments = ("Pizza", "Italian", 12.5, "MED")
     assert actual_arguments == expected_arguments
-    
 def test_create_meal_invalid_price_type():
     with pytest.raises(ValueError, match="Invalid price"):
         create_meal("Pizza", "Italian", "ten dollars", "MED")
-
 def test_create_meal_negative_price():
     with pytest.raises(ValueError, match="Invalid price"):
         create_meal("Pizza", "Italian", -10.0, "MED")
-
 def test_create_meal_invalid_difficulty():
     with pytest.raises(ValueError, match="Invalid difficulty level"):
-        create_meal("Pizza", "Italian", 15.0, "any")
-        
+        create_meal("Pizza", "Italian", 15.0, "any")  
 def test_create_meal_duplicates(mock_cursor):
     create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
     mock_cursor.execute.side_effect = sqlite3.IntegrityError()
@@ -75,9 +61,8 @@ def test_clear_meals(mocker,mock_cursor):
     mock_cursor.executescript.assert_called_once()
     
     
-    # TODO
 def test_clear_meals_database_error(mock_cursor,mocker):
-    # create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
+    create_meal(meal="Pizza", cuisine="Italian", price=12.5, difficulty="MED")
     mock_cursor.executescript.side_effect = sqlite3.Error("db err")
     mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_mel_table.sql'})
     mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
