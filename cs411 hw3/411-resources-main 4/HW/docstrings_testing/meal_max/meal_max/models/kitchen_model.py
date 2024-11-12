@@ -14,6 +14,14 @@ configure_logger(logger)
 
 @dataclass
 class Meal:
+    """
+    A class to manage the meals that are taking part in the battle.
+
+    Attributes:
+        price (float): the price of the meal being played.
+        difficulty (str): the difficulty of creating the meal.
+
+    """
     id: int
     meal: str
     cuisine: str
@@ -21,6 +29,12 @@ class Meal:
     difficulty: str
 
     def __post_init__(self):
+        """
+        Makes sure the price and difficulty are within bounds.
+
+        Raises:
+            ValueError: If the price or the difficulty are not within the correct boundries.
+        """
         if self.price < 0:
             raise ValueError("Price must be a positive value.")
         if self.difficulty not in ['LOW', 'MED', 'HIGH']:
@@ -28,6 +42,19 @@ class Meal:
 
 
 def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
+    """
+    Creates the meal
+
+    Args:
+        meal (str): the meal being created
+        cuisine (str): the type of food that the meal being created is
+        price (float): the price of the meal
+        difficulty (str): the difficulty of creating the meal
+
+    Raises:
+        ValueError: If the price or the difficulty are not within our boundaries 
+                    or if the meal already exists
+    """
     if not isinstance(price, (int, float)) or price <= 0:
         raise ValueError(f"Invalid price: {price}. Price must be a positive number.")
     if difficulty not in ['LOW', 'MED', 'HIGH']:
@@ -74,6 +101,16 @@ def clear_meals() -> None:
         raise e
 
 def delete_meal(meal_id: int) -> None:
+    """
+    Deletes the selected meal
+
+    Attributes:
+        meal_id (int): the id of the meal to be deleted
+
+    Raises:
+        TypeError: 
+        ValueError: If the meal has been deleted or if the meal ID cannot be found
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -97,6 +134,19 @@ def delete_meal(meal_id: int) -> None:
         raise e
 
 def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
+    """
+    Gets the leaderboard to find the winner
+
+    Attributes:
+        sort_by (str): how to determine winner
+
+    Raises:
+        ValueError: If sort_by is not in correct parameter
+    """
+    query = """
+        SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct
+        FROM meals WHERE deleted = false AND battles > 0
+    """
     query = """
         SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct
         FROM meals WHERE deleted = false AND battles > 0
@@ -138,6 +188,15 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
         raise e
 
 def get_meal_by_id(meal_id: int) -> Meal:
+    """
+    Retrieves the meal by the given ID
+
+    Attrbutes:
+        meal_id (int): the id of the meal
+
+    Raises:
+        ValueError: If meal with the ID has been deleted or if it can't be found
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -159,6 +218,15 @@ def get_meal_by_id(meal_id: int) -> Meal:
 
 
 def get_meal_by_name(meal_name: str) -> Meal:
+    """
+    Retrieves the meal by the name of the meal
+
+    Attributes:
+        meal_name (str): the name of the meal
+
+    Raises:
+        ValueError: If meal with the name has been deleted or if it can't be found
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -180,6 +248,18 @@ def get_meal_by_name(meal_name: str) -> Meal:
 
 
 def update_meal_stats(meal_id: int, result: str) -> None:
+    """
+    Updates the stats of the meal with most recent/up to date stats
+
+    Attributes:
+        meal_id (int): the ID of the meal we want to update
+        result (str): if the meal won or loss
+
+    Raises:
+        TypeError:
+        ValueError: If meal with the ID has been deleted or if it can't be found
+                    If the meal witht the ID has an invalid result
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
