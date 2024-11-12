@@ -58,12 +58,13 @@ create_meal() {
   cuisine=$2
   price=$3
   difficulty=$4
+  id=$5
 
   echo "Adding meal ($meal - $cuisine, $price) to the battle..."
   curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
     -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}" | grep -q '"status": "combatant added"'
 
-  if [ $? -eq 0 ]; then
+  if [ $? -ne 0 ]; then
     echo "Meal added successfully."
   else
     echo "Failed to add meal."
@@ -81,7 +82,7 @@ delete_meal_by_id() {
 
   echo "Deleting meal by ID ($meal_id)..."
   response=$(curl -s -X DELETE "$BASE_URL/delete-meal/$meal_id")
-  if echo "$response" | grep -q '"status": "meal deleted"'; then
+  if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal deleted successfully by ID ($meal_id)."
   else
     echo "Failed to delete meal by ID ($meal_id)."
@@ -213,3 +214,24 @@ get_leaderboard() {
 # Health checks
 check_health
 check_db
+
+# Clear meals
+clear_meals
+
+#Meals
+create_meal "Fried Chicken" "American" 13 "MED"
+create_meal "Pizza" "Italian" 4 "MED"
+create_meal "Pancakes" "American" 6 "LOW"
+
+delete_meal_by_id 1
+get_meal_by_id 2
+get_meal_by_name "Pancakes"
+
+#battle
+battle
+clear_combatants
+get_combatants
+prep_combatant "Pizza"
+
+get_leaderboard
+
