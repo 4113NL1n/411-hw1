@@ -21,8 +21,7 @@ def mock_cursor(mocker):
         yield mock_conn  
     mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
     return mock_cursor 
-    
-
+     
 @pytest.fixture
 def battle_model():
     return BattleModel()
