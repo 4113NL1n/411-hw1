@@ -1,0 +1,19 @@
+Goal: Test how accurately the tool responds to snickers, and only snickers
+
+Non-Goal: Record user response in using snickers to merge
+
+Non-functional requirement 1: Security
+
+Functional requirements: Reliability
+
+Making sure that not every sound is picked up as a snicker 
+
+Be sure that a loud and quiet snicker are both recognized
+
+Non-functional requirement 2: Usability
+
+Functional requirements: Performance
+
+The speed of recognition should be fast, faster than typing
+
+Should not take too much ram and cpu usage, should not slow down computers when checking for snickers

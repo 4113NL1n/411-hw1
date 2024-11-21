@@ -1,0 +1,15 @@
+As a vanilla git power-user that has never seen GiggleGit before, I want to understand the features that makes GiggleGit different so I can use GiggleGit to its full capacity.
+As a team lead onboarding an experienced GiggleGit user, I want to make sure my team is adapted to the workflow and make use of GiggleGit.
+
+Theme: Ease of use for both Developers and general Users
+Epic: Documentation
+As a Developer that has to use GiggleGit, I want to be able to understand GiggleGit quickly and seamlessly integrate it into my work. 
+Task: Ease of usage  
+Ticket 1 : Comprehensive guide 
+    Create a manual that focus on installation, usage and commands. It's important for this to be quick start guide, not a full documentation of everything. 
+Ticket 2 : Example project
+    Have different project that show the unique traits of GiggleGit, how this version control differ from other version control system
+
+As a user I want to be able to authenticate on a new machine 
+This is not a user story because this is very vague and feels more of a requirement than advice. We do not know why they want authentication, and what kind of authentication. 
+
